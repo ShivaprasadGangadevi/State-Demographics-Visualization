@@ -165,8 +165,10 @@ data = [
 # Initialize Dash app
 server = Flask(__name__)
 
-# Initialize Dash app with Flask server
+# Initialize Dash app with Flagitsk server
 app = dash.Dash(__name__, server=server)
+
+server = app.server
 
 # Layout
 app.layout = html.Div([
