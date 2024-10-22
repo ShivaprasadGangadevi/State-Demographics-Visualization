@@ -161,9 +161,9 @@ data = [
 
 
 # Initialize Dash app
-app = dash.Dash(__name__)
 
-server = app.server
+server = Flask(__name__)
+app = dash.Dash(__name__, server=server)
 # Layout
 app.layout = html.Div([
     html.H1("State Demographics Visualization"),
