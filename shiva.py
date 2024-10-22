@@ -162,8 +162,7 @@ data = [
 ]
 
 
-# Initialize Dash app
-server = Flask(__name__)
+
 
 # Initialize Dash app with Flagitsk server
 app = dash.Dash(__name__)
@@ -299,5 +298,4 @@ def update_graph(clickData):
 
 # Run the app
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
-
+    app.run_server(debug=True)
