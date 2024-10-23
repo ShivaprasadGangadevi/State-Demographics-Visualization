@@ -200,6 +200,8 @@ data = [
 # Initialize Dash app
 app = dash.Dash(__name__)
 
+server = app.server
+
 # Layout
 app.layout = html.Div(style={'backgroundColor': 'rgb(74 58 127 / 59%)', 'padding': '20px'}, children=[
     html.Div(
