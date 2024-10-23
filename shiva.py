@@ -1,11 +1,9 @@
 import dash
-from flask import Flask
 from dash import html, dcc, callback, Input, Output
 import plotly.express as px
 import plotly.graph_objects as go
 
-
-# Sample JSON data with industry information and cars
+# Sample JSON data
 data = [
     {
         "State": "Alabama",
@@ -158,46 +156,91 @@ data = [
             {"Type": "SUV", "Count": 100000},
             {"Type": "Truck", "Count": 50000}
         ]
+    },
+    {
+        "State": "District of Columbia",
+        "TotalPopulation": 670587,
+        "WhiteNonHispanic": 243730,
+        "BlackNonHispanic": 291880,
+        "Hispanic": 77168,
+        "Employment": 390000,  
+        "Unemployment": 25000, 
+        "Industries": {
+            "Finance": {"count": 500, "members": 15000}, 
+            "Healthcare": {"count": 300, "members": 5000}, 
+            "Manufacturing": {"count": 100, "members": 2000} 
+        },
+        "Cars": [
+            {"Type": "Sedan", "Count": 100000}, 
+            {"Type": "SUV", "Count": 50000},    
+            {"Type": "Truck", "Count": 20000}   
+        ]
+    },
+      {
+        "State": "Florida",
+        "TotalPopulation": 21634500,
+        "WhiteNonHispanic": 11242500,
+        "BlackNonHispanic": 3232870,
+        "Hispanic": 5738280,
+        "Employment": 13000000, 
+        "Unemployment": 500000, 
+        "Industries": {
+            "Finance": {"count": 800, "members": 50000}, 
+            "Healthcare": {"count": 600, "members": 25000}, 
+            "Manufacturing": {"count": 700, "members": 15000} 
+        },
+        "Cars": [
+            {"Type": "Sedan", "Count": 8000000}, 
+            {"Type": "SUV", "Count": 4000000},   
+            {"Type": "Truck", "Count": 2000000} 
+        ]
     }
 ]
 
-
-
-
-# Initialize Dash app with Flagitsk server
+# Initialize Dash app
 app = dash.Dash(__name__)
 
-server = app.server
-
 # Layout
-app.layout = html.Div([
-    html.H1("State Demographics Visualization"),
-    
-    # Bar chart for total population
-    dcc.Graph(id='bar-chart'),
-
-    # Div for all graphs in a single row
-    html.Div([
+app.layout = html.Div(style={'backgroundColor': 'rgb(74 58 127 / 59%)', 'padding': '20px'}, children=[
+    html.Div(
+        html.H1(
+            "Exploring US State Demographics",
+            style={
+                'textAlign': 'center',
+                'fontSize': '70px',
+                'fontWeight': 'bold',
+                'textShadow': 'rgba(255, 255, 255, 0.7) 2px 2px 4px',
+                'color': '#000',
+                'padding': '20px'
+            }
+        ),
+    ),
+    html.Div(
+        dcc.Graph(id='bar-chart', style={'height': '600px', 'width': '100%'}),
+        style={'border': '2px solid #007bff', 'border-radius': '10px', 'padding': '0px', 'margin': '10px', 'backgroundColor': 'white'}
+    ),
+    html.Div(id='additional-graphs', style={'display': 'none'}, children=[
         html.Div([
-            dcc.Graph(id='pie-chart'),
-            html.H4(id='pie-chart-title', children="Racial Composition")
-        ], style={'flex': '1', 'padding': '10px'}),
-        
+            html.Div([
+                dcc.Graph(id='pie-chart', style={'height': '600px', 'width': '100%'}),
+                html.H4(id='pie-chart-title', children="Racial Composition", style={'fontSize': '28px'})
+            ], style={'border': '2px solid #007bff', 'border-radius': '10px', 'padding': '10px', 'margin': '10px', 'flex': '1', 'backgroundColor': 'white'}),
+            html.Div([
+                dcc.Graph(id='industry-line-chart', style={'height': '600px', 'width': '100%'}),
+                html.H4(id='industry-line-chart-title', children="Industry Members Over Time", style={'fontSize': '28px'})
+            ], style={'border': '2px solid #007bff', 'border-radius': '10px', 'padding': '10px', 'margin': '10px', 'flex': '1', 'backgroundColor': 'white'})
+        ], style={'display': 'flex', 'flex-direction': 'row', 'justify-content': 'space-between'}),
         html.Div([
-            dcc.Graph(id='industry-bar-chart'),
-            html.H4(id='industry-bar-chart-title', children="Industry Members")
-        ], style={'flex': '1', 'padding': '10px'}),
-        
-        html.Div([
-            dcc.Graph(id='employment-figurewidget'),
-            html.H4(id='employment-figurewidget-title', children="Employment Data")
-        ], style={'flex': '1', 'padding': '10px'}),
-        
-        html.Div([
-            dcc.Graph(id='cars-chart'),
-            html.H4(id='cars-chart-title', children="Cars by Type")
-        ], style={'flex': '1', 'padding': '10px'})
-    ], style={'display': 'flex', 'flex-direction': 'row'})
+            html.Div([
+                dcc.Graph(id='employment-figurewidget', style={'height': '600px', 'width': '100%'}),
+                html.H4(id='employment-figurewidget-title', children="Employment Data", style={'fontSize': '28px'})
+            ], style={'border': '2px solid #007bff', 'border-radius': '10px', 'padding': '10px', 'margin': '10px', 'flex': '1', 'backgroundColor': 'white'}),
+            html.Div([
+                dcc.Graph(id='cars-chart', style={'height': '600px', 'width': '100%'}),
+                html.H4(id='cars-chart-title', children="Cars by Type", style={'fontSize': '28px'})
+            ], style={'border': '2px solid #007bff', 'border-radius': '10px', 'padding': '10px', 'margin': '10px', 'flex': '1', 'backgroundColor': 'white'})
+        ], style={'display': 'flex', 'flex-direction': 'row', 'justify-content': 'space-between'})
+    ])
 ])
 
 # Define custom colors
@@ -207,13 +250,13 @@ pie_colors = ['#636EFA', '#EF553B', '#00CC96']
 @app.callback(
     Output('bar-chart', 'figure'),
     Output('pie-chart', 'figure'),
-    Output('industry-bar-chart', 'figure'),
+    Output('industry-line-chart', 'figure'),
     Output('employment-figurewidget', 'figure'),
     Output('cars-chart', 'figure'),
+    Output('additional-graphs', 'style'),
     Input('bar-chart', 'clickData')
 )
 def update_graph(clickData):
-    # Create bar chart for total population
     states = [d['State'] for d in data]
     totals = [d['TotalPopulation'] for d in data]
 
@@ -225,18 +268,24 @@ def update_graph(clickData):
         color=states,
         color_discrete_sequence=bar_colors
     )
+    bar_fig.update_layout(
+        title_font_size=30,
+        xaxis_title_font_size=20,
+        yaxis_title_font_size=20,
+        legend_font_size=16
+    )
 
-    # Default figures for pie, industry bar chart, employment, and cars
-    pie_fig = px.pie(values=[0], names=['No Data'], title="Select a state from the bar chart")
-    industry_bar_fig = px.bar(x=["No Data"], y=[0], title="Industry Members")
+    pie_fig = go.Figure()
+    industry_line_fig = go.Figure()
     employment_fig = go.Figure()
     cars_fig = go.Figure()
+
+    additional_graphs_style = {'display': 'none'}
 
     if clickData:
         selected_state = clickData['points'][0]['x']
         selected_data = next(item for item in data if item["State"] == selected_state)
         
-        # Create pie chart with racial composition
         racial_composition = {
             'White': selected_data['WhiteNonHispanic'],
             'Black': selected_data['BlackNonHispanic'],
@@ -249,42 +298,55 @@ def update_graph(clickData):
             title=f"Racial Composition of {selected_state}",
             color_discrete_sequence=pie_colors  
         )
-
-        # Prepare industry data for bar chart
-        industry_names = list(selected_data['Industries'].keys())
-        industry_members = [info['members'] for info in selected_data['Industries'].values()]
-
-        # Create bar chart for industry members
-        industry_bar_fig = px.bar(
-            x=industry_names,
-            y=industry_members,
-            title=f"Industry Members in {selected_state}",
-            labels={'x': 'Industries', 'y': 'Number of Members'},
-            color=industry_names,
-            color_discrete_sequence=bar_colors
+        pie_fig.update_layout(
+            title_font_size=30,
+            legend_font_size=16
         )
 
-        # Create FigureWidget for Employment and Unemployment
+        industry_names = list(selected_data['Industries'].keys())
+        industry_members = [info['members'] for info in selected_data['Industries'].values()]
+        industry_years = ['2018', '2019', '2020', '2021', '2022']  # Example years
+        
+        for name in industry_names:
+            industry_line_fig.add_trace(go.Scatter(
+                x=industry_years,
+                y=[info['members'] for info in selected_data['Industries'].values()],
+                mode='lines+markers',
+                name=name
+            ))
+
+        industry_line_fig.update_layout(
+            title=f"Industry Members Over Time in {selected_state}",
+            xaxis_title='Year',
+            yaxis_title='Number of Members',
+            title_font_size=30,
+            xaxis_title_font_size=20,
+            yaxis_title_font_size=20,
+            legend_font_size=16
+        )
+
         employment_data = {
             'Employment': selected_data['Employment'],
             'Unemployment': selected_data['Unemployment']
         }
 
-        employment_fig = go.Figure(data=[
+        employment_fig = go.Figure(data=[    
             go.Pie(
                 labels=list(employment_data.keys()),
                 values=list(employment_data.values()),
-                title=f"Employment Data in {selected_state}",
                 hole=.3,
                 marker=dict(colors=bar_colors[:2])
             )
         ])
+        employment_fig.update_layout(
+            title=f"Employment Data in {selected_state}",
+            title_font_size=30,
+            legend_font_size=16
+        )
 
-        # Prepare car data for the cars chart
         car_types = [car['Type'] for car in selected_data['Cars']]
         car_counts = [car['Count'] for car in selected_data['Cars']]
 
-        # Create bar chart for cars
         cars_fig = px.bar(
             x=car_types,
             y=car_counts,
@@ -293,8 +355,16 @@ def update_graph(clickData):
             color=car_types,
             color_discrete_sequence=bar_colors
         )
+        cars_fig.update_layout(
+            title_font_size=30,
+            xaxis_title_font_size=20,
+            yaxis_title_font_size=20,
+            legend_font_size=16
+        )
 
-    return bar_fig, pie_fig, industry_bar_fig, employment_fig, cars_fig  # Return the updated figures
+        additional_graphs_style = {'display': 'block'}
+
+    return bar_fig, pie_fig, industry_line_fig, employment_fig, cars_fig, additional_graphs_style
 
 # Run the app
 if __name__ == '__main__':
