@@ -199,7 +199,6 @@ data = [
 
 # Initialize Dash app
 app = dash.Dash(__name__)
-
 server = app.server
 
 # Layout
@@ -209,7 +208,7 @@ app.layout = html.Div(style={'backgroundColor': 'rgb(74 58 127 / 59%)', 'padding
             "Exploring US State Demographics",
             style={
                 'textAlign': 'center',
-                'fontSize': '70px',
+                'fontSize': '30px',  # Reduced title font size
                 'fontWeight': 'bold',
                 'textShadow': 'rgba(255, 255, 255, 0.7) 2px 2px 4px',
                 'color': '#000',
@@ -218,28 +217,28 @@ app.layout = html.Div(style={'backgroundColor': 'rgb(74 58 127 / 59%)', 'padding
         ),
     ),
     html.Div(
-        dcc.Graph(id='bar-chart', style={'height': '600px', 'width': '100%'}),
+        dcc.Graph(id='bar-chart', style={'height': '300px', 'width': '100%','marginTop':'10px'}),
         style={'border': '2px solid #007bff', 'border-radius': '10px', 'padding': '0px', 'margin': '10px', 'backgroundColor': 'white'}
     ),
-    html.Div(id='additional-graphs', style={'display': 'none'}, children=[
+    html.Div(id='additional-graphs', style={'display': 'none', 'overflow': 'auto','width': '100%'}, children=[
         html.Div([
             html.Div([
-                dcc.Graph(id='pie-chart', style={'height': '600px', 'width': '100%'}),
-                html.H4(id='pie-chart-title', children="Racial Composition", style={'fontSize': '28px'})
+                dcc.Graph(id='pie-chart', style={'height': '300px', 'width': '500px'}),
+                html.H4(id='pie-chart-title', children="Racial Composition", style={'fontSize': '24px'})  # Reduced font size
             ], style={'border': '2px solid #007bff', 'border-radius': '10px', 'padding': '10px', 'margin': '10px', 'flex': '1', 'backgroundColor': 'white'}),
             html.Div([
-                dcc.Graph(id='industry-line-chart', style={'height': '600px', 'width': '100%'}),
-                html.H4(id='industry-line-chart-title', children="Industry Members Over Time", style={'fontSize': '28px'})
+                dcc.Graph(id='industry-line-chart', style={'height': '300px', 'width': '500px'}),
+                html.H4(id='industry-line-chart-title', children="Industry Members Over Time", style={'fontSize': '24px'})  # Reduced font size
             ], style={'border': '2px solid #007bff', 'border-radius': '10px', 'padding': '10px', 'margin': '10px', 'flex': '1', 'backgroundColor': 'white'})
         ], style={'display': 'flex', 'flex-direction': 'row', 'justify-content': 'space-between'}),
         html.Div([
             html.Div([
-                dcc.Graph(id='employment-figurewidget', style={'height': '600px', 'width': '100%'}),
-                html.H4(id='employment-figurewidget-title', children="Employment Data", style={'fontSize': '28px'})
+                dcc.Graph(id='employment-figurewidget', style={'height': '300px', 'width': '500px'}),
+                html.H4(id='employment-figurewidget-title', children="Employment Data", style={'fontSize': '24px'})  # Reduced font size
             ], style={'border': '2px solid #007bff', 'border-radius': '10px', 'padding': '10px', 'margin': '10px', 'flex': '1', 'backgroundColor': 'white'}),
             html.Div([
-                dcc.Graph(id='cars-chart', style={'height': '600px', 'width': '100%'}),
-                html.H4(id='cars-chart-title', children="Cars by Type", style={'fontSize': '28px'})
+                dcc.Graph(id='cars-chart', style={'height': '300px', 'width': '500px'}),
+                html.H4(id='cars-chart-title', children="Cars by Type", style={'fontSize': '24px'})  # Reduced font size
             ], style={'border': '2px solid #007bff', 'border-radius': '10px', 'padding': '10px', 'margin': '10px', 'flex': '1', 'backgroundColor': 'white'})
         ], style={'display': 'flex', 'flex-direction': 'row', 'justify-content': 'space-between'})
     ])
@@ -271,10 +270,12 @@ def update_graph(clickData):
         color_discrete_sequence=bar_colors
     )
     bar_fig.update_layout(
-        title_font_size=30,
-        xaxis_title_font_size=20,
-        yaxis_title_font_size=20,
-        legend_font_size=16
+        title_font_size=20,  # Adjusted title font size
+        xaxis_title_font_size=16,  # Adjusted x-axis label font size
+        yaxis_title_font_size=16,  # Adjusted y-axis label font size
+        legend_font_size=12,  # Adjusted legend font size
+        margin=dict(l=20, r=20, t=30, b=30),  # Reduced margins for compact layout
+        title_pad=dict(t=10)  # Padding around title for better spacing
     )
 
     pie_fig = go.Figure()
@@ -301,8 +302,9 @@ def update_graph(clickData):
             color_discrete_sequence=pie_colors  
         )
         pie_fig.update_layout(
-            title_font_size=30,
-            legend_font_size=16
+            title_font_size=20,  # Adjusted title font size
+            legend_font_size=12,  # Adjusted legend font size
+            margin=dict(l=20, r=20, t=30, b=30)  # Reduced margins
         )
 
         industry_names = list(selected_data['Industries'].keys())
@@ -321,10 +323,11 @@ def update_graph(clickData):
             title=f"Industry Members Over Time in {selected_state}",
             xaxis_title='Year',
             yaxis_title='Number of Members',
-            title_font_size=30,
-            xaxis_title_font_size=20,
-            yaxis_title_font_size=20,
-            legend_font_size=16
+            title_font_size=20,  # Adjusted title font size
+            xaxis_title_font_size=16,  # Adjusted x-axis label font size
+            yaxis_title_font_size=16,  # Adjusted y-axis label font size
+            legend_font_size=12,  # Adjusted legend font size
+            margin=dict(l=20, r=20, t=30, b=30)  # Reduced margins
         )
 
         employment_data = {
@@ -342,8 +345,9 @@ def update_graph(clickData):
         ])
         employment_fig.update_layout(
             title=f"Employment Data in {selected_state}",
-            title_font_size=30,
-            legend_font_size=16
+            title_font_size=20,  # Adjusted title font size
+            legend_font_size=12,  # Adjusted legend font size
+            margin=dict(l=20, r=20, t=30, b=30)  # Reduced margins
         )
 
         car_types = [car['Type'] for car in selected_data['Cars']]
@@ -358,16 +362,17 @@ def update_graph(clickData):
             color_discrete_sequence=bar_colors
         )
         cars_fig.update_layout(
-            title_font_size=30,
-            xaxis_title_font_size=20,
-            yaxis_title_font_size=20,
-            legend_font_size=16
+            title_font_size=20,  # Adjusted title font size
+            xaxis_title_font_size=16,  # Adjusted x-axis label font size
+            yaxis_title_font_size=16,  # Adjusted y-axis label font size
+            legend_font_size=12,  # Adjusted legend font size
+            margin=dict(l=20, r=20, t=30, b=30)  # Reduced margins
         )
 
         additional_graphs_style = {'display': 'block'}
 
     return bar_fig, pie_fig, industry_line_fig, employment_fig, cars_fig, additional_graphs_style
 
-# Run the app
+
 if __name__ == '__main__':
     app.run_server(debug=True)
